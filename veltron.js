@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 
+const routeMessage = require("./gateway/messageRouter");
+
 const app = express();
 app.use(bodyParser.json());
 
@@ -21,32 +23,25 @@ app.get("/webhook", (req, res) => {
 app.post("/webhook", async (req, res) => {
   const event = req.body.entry?.[0]?.messaging?.[0];
 
-  if (!event?.message?.text) return res.sendStatus(200);
+  if (!event?.message) return res.sendStatus(200);
 
-  const sender = event.sender.id;
-  const text = event.message.text;
-
-  let reply = "হুম 🤔 বুঝতে পারছি না...";
-
-  if (text.toLowerCase().includes("hi"))
-    reply = "Hey 😊 আমি VeltronAI!";
-  else if (text.toLowerCase().includes("name"))
-    reply = "আমার নাম VeltronAI 🤖";
-  else if (text.toLowerCase().includes("author"))
-    reply = "আমার Author ZihadKazi 👑";
-
-  await axios.post(
-    `https://graph.facebook.com/v18.0/me/messages?access_token=${PAGE_TOKEN}`,
-    {
-      recipient: { id: sender },
-      message: { text: reply }
+  const api = {
+    sendMessage: async (msg, id) => {
+      await axios.post(
+        `https://graph.facebook.com/v18.0/me/messages?access_token=${PAGE_TOKEN}`,
+        {
+          recipient: { id },
+          message: { text: msg }
+        }
+      );
     }
-  );
+  };
+
+  await routeMessage({ api, event });
 
   res.sendStatus(200);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("VeltronAI Running 🚀");
+app.listen(process.env.PORT || 3000, () => {
+  console.log("VeltronAI System Online 🚀");
 });
