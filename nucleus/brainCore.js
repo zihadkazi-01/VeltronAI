@@ -1,11 +1,17 @@
-function processBrain(input) {
+function processBrain(input, memory) {
   const msg = input.toLowerCase();
 
-  if (msg.includes("hi")) return { mood: "happy", text: "Hey 😊 আমি VeltronAI!" };
-  if (msg.includes("sad")) return { mood: "support", text: "মন খারাপ করো না 💙" };
-  if (msg.includes("love")) return { mood: "romantic", text: "ভালোবাসা সুন্দর ❤️" };
+  if (msg.includes("hi")) return { mood: "happy", text: "Hey 😊 আবার আসছো?" };
+  if (msg.includes("name")) return { mood: "neutral", text: "আমি VeltronAI 🤖" };
 
-  return { mood: "neutral", text: "হুম 🤔 বুঝতে পারছি না..." };
+  if (memory.length > 5) {
+    return {
+      mood: "smart",
+      text: "তুমি আগেও অনেক কিছু বলেছো 😎 আমি মনে রাখছি..."
+    };
+  }
+
+  return { mood: "neutral", text: "হুম 🤔 বলো শুনছি..." };
 }
 
 module.exports = processBrain;
